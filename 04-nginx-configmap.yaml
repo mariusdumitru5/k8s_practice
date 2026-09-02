@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config 
+  namespace: web-app
+data:
+  # Configurazione del VirtualHost di Nginx
+  default.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+
+        location / {
+            root /usr/share/nginx/html;
+            index index.html index.htm;
+        }
+
+        error_page 500 502 503 504 /5x.html;
+        location = /5x.html {
+            root /usr/share/nginx/html;
+        }
+
+        # REVERSE PROXY: Inoltra tutte le chiamate /api al backend Node.js
+        location /api/ {
+            proxy_pass http://backend-service:3000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+    }
+
+  # File statico index.html di prova
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="it">
+    <head>
+        <meta charset="UTF-8">
+        <title>Applicazione Nginx + MariaDB</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 40px; background: #f4f4f9; }
+            .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+            h1 { color: #0070f3; }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h1>Sito Web Attivo!</h1>
+            <p>Configurazione Nginx caricata con successo tramite <strong>ConfigMap</strong>.</p>
+            <p>MariaDB è configurato con credenziali sicure gestite tramite <strong>Kubernetes Secret</strong>.</p>
+        </div>
+    </body>
+    </html>
