@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+  namespace: web-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-api
+  template:
+    metadata:
+      labels:
+        app: backend-api
+    spec:
+      containers:
+      - name: node-api
+        image: node:18-alpine
+        command: ["sh", "-c", "mkdir -p /app && cp /config/server.js /app/server.js && cd /app && npm install express mysql2 && node server.js"]
+        workingDir: /app
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MARIADB_HOST
+          value: "mariadb-service"
+        - name: MARIADB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret
+              key: MARIADB_USER
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret
+              key: MARIADB_PASSWORD
+        - name: MARIADB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret
+              key: MARIADB_DATABASE
+        volumeMounts:
+        - name: code
+          mountPath: /config   
+      volumes:
+      - name: code
+        configMap:
+          name: backend-code
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  namespace: web-app
+spec:
+  type: ClusterIP
+  selector:
+    app: backend-api
+  ports:
+  - port: 3000
+    targetPort: 3000

@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-code
+  namespace: web-app
+data:
+  server.js: |
+    const express = require('express');
+    const mysql = require('mysql2/promise');
+
+    const app = express();
+    app.use(express.json());
+
+    // Connessione a MariaDB usando le variabili d'ambiente del Secret
+    const pool = mysql.createPool({
+      host: process.env.MARIADB_HOST || 'mariadb-service',
+      user: process.env.MARIADB_USER,
+      password: process.env.MARIADB_PASSWORD,
+      database: process.env.MARIADB_DATABASE,
+      port: 3306
+    });
+
+    // Endpoint per inizializzare la tabella
+    app.get('/api/init', async (req, res) => {
+      try {
+        await pool.query('CREATE TABLE IF NOT EXISTS visitatori (id INT AUTO_INCREMENT PRIMARY KEY, nome VARCHAR(255), data DATETIME DEFAULT CURRENT_TIMESTAMP)');
+        res.json({ message: "Tabella creata con successo su MariaDB!" });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    });
+
+    // Endpoint per LEGGERE i dati
+    app.get('/api/visitatori', async (req, res) => {
+      try {
+        const [rows] = await pool.query('SELECT * FROM visitatori ORDER BY id DESC');
+        res.json(rows);
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    });
+
+    // Endpoint per SCRIVERE i dati
+    app.post('/api/visitatori', async (req, res) => {
+      try {
+        const { nome } = req.body;
+        await pool.query('INSERT INTO visitatori (nome) VALUES (?)', [nome]);
+        res.json({ message: `Utente ${nome} salvato nel database!` });
+      } catch (err) {
+        res.status(500).json({ error: err.message });
+      }
+    });
+
+    app.listen(3000, () => console.log('Backend attivo sulla porta 3000'));
