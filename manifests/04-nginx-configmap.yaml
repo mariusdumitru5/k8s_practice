@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-config 
-  namespace: web-app
+  namespace: robot-app
 data:
   # Configurazione del VirtualHost di Nginx
   default.conf: |

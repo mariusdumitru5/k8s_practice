@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mariadb
-  namespace: web-app
+  namespace: robot-app
   labels:
     app: mariadb
 spec:
@@ -36,7 +36,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mariadb-service 
-  namespace: web-app
+  namespace: robot-app
 spec:
   selector:
     app: mariadb

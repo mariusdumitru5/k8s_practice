@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: backend-code
-  namespace: web-app
+  namespace: robot-app
 data:
   server.js: |
     const express = require('express');
