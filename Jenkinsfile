@@ -43,8 +43,8 @@ pipeline {
                 sh """
                         echo "Creazione pod e deployment..."
                         
-                        kubectl apply  manifests/04-nginx-configmap.yaml -n robot-app
-                        kubectl apply  manifests/05-nginx-deployment.yaml -n robot-app
+                        kubectl apply  -f manifests/04-nginx-configmap.yaml -n robot-app
+                        kubectl apply  -f manifests/05-nginx-deployment.yaml -n robot-app
                         
                         echo "Creazione pod e deployment completata con successo!"
                 """
@@ -55,8 +55,8 @@ pipeline {
                 sh """
                         echo "Creazione backend..."
                         
-                        kubectl apply  manifests/backend-configmap.yaml -n robot-app
-                        kubectl apply  manifests/backend-deployment.yaml -n robot-app
+                        kubectl apply  -f manifests/backend-configmap.yaml -n robot-app
+                        kubectl apply  -f manifests/backend-deployment.yaml -n robot-app
                         
                         echo "Creazione backend completata con successo!"
                 """
