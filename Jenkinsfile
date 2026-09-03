@@ -27,7 +27,11 @@ pipeline {
                             echo "Creazione del database mariadb..."
 
                            # Inietta le variabili nel Secret ed esegue l'apply da standard input
-                            envsubst < manifests/01-mariadb-secret.yaml | kubectl apply -n robot-app -f -
+                            sed -e "s|\\\${MYSQL_ROOT_PASSWORD}|$MYSQL_ROOT_PASSWORD|g" \
+                                -e "s|\\\${MYSQL_PASSWORD}|$MYSQL_PASSWORD/g" \
+                                 manifests/01-mariadb-secret.yaml | kubectl apply -n robot-app -f -
+                            
+                            
                             kubectl apply -f manifests/02-mariadb-pvc.yaml  -n robot-app
                             kubectl apply -f manifests/03-mariadb-deployment.yaml  -n robot-app
 
