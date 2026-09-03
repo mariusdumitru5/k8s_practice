@@ -11,7 +11,7 @@ pipeline {
                 sh """
                         echo "Creazione namespace per il deploy..."
                         
-                        kubectl create namespace robot-app
+                        kubectl create namespace robot-app || true
                           
                         echo "Creazione namespace completata con successo!"
                 """
