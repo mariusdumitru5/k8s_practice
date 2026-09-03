@@ -23,7 +23,7 @@ pipeline {
                     string(credentialsId: 'mariadb-root-pass', variable: 'MYSQL_ROOT_PASSWORD'),
                     string(credentialsId: 'mariadb-user-pass', variable: 'MYSQL_PASSWORD')
                 ]) {
-                    sh 'envsubst < secret-template.yaml | kubectl apply -f -'
+                    sh 'envsubst < 01-mariadb-secret.yaml | kubectl apply -f -'
                 }
 
                 sh """
