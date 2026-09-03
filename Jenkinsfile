@@ -1,5 +1,5 @@
 pipeline {
-    agent {label "mac-worker"}
+    agent {label "mac-agent"}
     stages {
         stage("Checkout"){
             steps {
